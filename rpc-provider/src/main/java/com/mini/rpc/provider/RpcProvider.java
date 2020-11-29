@@ -1,6 +1,6 @@
-package com.mini.rpc;
+package com.mini.rpc.provider;
 
-import com.mini.rpc.registry.RegistryService;
+import com.mini.rpc.provider.registry.RegistryService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -52,6 +52,7 @@ public class RpcProvider implements InitializingBean {
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             ChannelFuture channelFuture = bootstrap.bind(this.serverAddress, this.serverPort).sync();
+            log.info("server addr {} started on port {}", this.serverAddress, this.serverPort);
             channelFuture.channel().closeFuture().sync();
         } finally {
             boss.shutdownGracefully();

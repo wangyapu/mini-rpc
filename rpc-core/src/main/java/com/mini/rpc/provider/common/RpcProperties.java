@@ -1,4 +1,4 @@
-package com.mini.rpc.common;
+package com.mini.rpc.provider.common;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
