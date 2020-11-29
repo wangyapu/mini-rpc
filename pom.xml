@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.wyp.rpc</groupId>
+    <groupId>com.mini.rpc</groupId>
     <artifactId>rpc</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -12,7 +12,9 @@
         <module>rpc-provider</module>
         <module>rpc-consumer</module>
         <module>rpc-core</module>
+        <module>rpc-registry</module>
         <module>rpc-test</module>
+        <module>rpc-registry</module>
     </modules>
 
     <!-- Inherit defaults from Spring Boot -->
@@ -25,22 +27,27 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.wyp.asura</groupId>
+                <groupId>com.mini.rpc</groupId>
                 <artifactId>rpc-consumer</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wyp.rpc</groupId>
+                <groupId>com.mini.rpc</groupId>
                 <artifactId>rpc-provider</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wyp.rpc</groupId>
+                <groupId>com.mini.rpc</groupId>
+                <artifactId>rpc-registry</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mini.rpc</groupId>
                 <artifactId>rpc-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wyp.rpc</groupId>
+                <groupId>com.mini.rpc</groupId>
                 <artifactId>rpc-test</artifactId>
                 <version>${project.version}</version>
             </dependency>
