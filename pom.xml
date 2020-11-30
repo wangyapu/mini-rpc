@@ -15,6 +15,7 @@
         <module>rpc-registry</module>
         <module>rpc-test</module>
         <module>rpc-registry</module>
+        <module>rpc-facade</module>
     </modules>
 
     <!-- Inherit defaults from Spring Boot -->
@@ -44,6 +45,11 @@
             <dependency>
                 <groupId>com.mini.rpc</groupId>
                 <artifactId>rpc-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mini.rpc</groupId>
+                <artifactId>rpc-facade</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

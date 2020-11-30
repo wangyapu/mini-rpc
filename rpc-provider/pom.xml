@@ -18,6 +18,10 @@
         </dependency>
         <dependency>
             <groupId>com.mini.rpc</groupId>
+            <artifactId>rpc-facade</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mini.rpc</groupId>
             <artifactId>rpc-registry</artifactId>
         </dependency>
         <dependency>

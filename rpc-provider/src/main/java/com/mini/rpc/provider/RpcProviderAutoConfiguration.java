@@ -1,6 +1,6 @@
 package com.mini.rpc.provider;
 
-import com.mini.rpc.provider.common.RpcProperties;
+import com.mini.rpc.common.RpcProperties;
 import com.mini.rpc.provider.registry.RegistryFactory;
 import com.mini.rpc.provider.registry.RegistryService;
 import com.mini.rpc.provider.registry.RegistryType;
