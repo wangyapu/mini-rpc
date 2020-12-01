@@ -1,5 +1,8 @@
 package com.mini.rpc.provider;
 
+import com.mini.rpc.common.RpcServiceHelper;
+import com.mini.rpc.common.ServiceMeta;
+import com.mini.rpc.provider.annotation.RpcService;
 import com.mini.rpc.provider.registry.RegistryService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -10,17 +13,24 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
-public class RpcProvider implements InitializingBean {
+public class RpcProvider implements InitializingBean, BeanPostProcessor {
 
-    private final String serverAddress;
+    private String serverAddress;
     private final int serverPort;
     private final RegistryService serviceRegistry;
 
-    public RpcProvider(String serverAddress, int serverPort, RegistryService serviceRegistry) {
-        this.serverAddress = serverAddress;
+    private Map<String, Object> rpcServiceHolder = new HashMap<>();
+
+    public RpcProvider(int serverPort, RegistryService serviceRegistry) {
         this.serverPort = serverPort;
         this.serviceRegistry = serviceRegistry;
     }
@@ -37,6 +47,8 @@ public class RpcProvider implements InitializingBean {
     }
 
     private void startRpcServer() throws Exception {
+        this.serverAddress = InetAddress.getLocalHost().getHostAddress();
+
         EventLoopGroup boss = new NioEventLoopGroup();
         EventLoopGroup worker = new NioEventLoopGroup();
         try {
@@ -58,6 +70,29 @@ public class RpcProvider implements InitializingBean {
             boss.shutdownGracefully();
             worker.shutdownGracefully();
         }
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        RpcService rpcService = bean.getClass().getAnnotation(RpcService.class);
+        if (rpcService != null) {
+            String serviceName = rpcService.serviceInterface().getName();
+            String serviceVersion = rpcService.serviceVersion();
+
+            try {
+                ServiceMeta serviceMeta = new ServiceMeta();
+                serviceMeta.setServiceAddr(serverAddress);
+                serviceMeta.setServicePort(serverPort);
+                serviceMeta.setServiceName(serviceName);
+                serviceMeta.setServiceVersion(serviceVersion);
+
+                serviceRegistry.register(serviceMeta);
+                rpcServiceHolder.put(RpcServiceHelper.buildServiceKey(serviceMeta), bean);
+            } catch (Exception e) {
+                log.error("failed to register service {}#{}", serviceName, serviceVersion, e);
+            }
+        }
+        return bean;
     }
 
 }

@@ -7,8 +7,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "rpc")
 public class RpcProperties {
 
-    private String serviceAddr;
-
     private int servicePort;
 
     private String registryAddr;

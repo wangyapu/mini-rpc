@@ -11,10 +11,10 @@ public class RegistryFactory {
                 if (null == registryService) {
                     switch (type) {
                         case ZOOKEEPER:
-                            registryService = new ZookeeperRegistryService();
+                            registryService = new ZookeeperRegistryService(registryAddr);
                             break;
                         case EUREKA:
-                            registryService = new EurekaRegistryService();
+                            registryService = new EurekaRegistryService(registryAddr);
                             break;
                     }
                 }
