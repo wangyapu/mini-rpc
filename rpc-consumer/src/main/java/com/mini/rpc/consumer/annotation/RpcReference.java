@@ -18,4 +18,6 @@ public @interface RpcReference {
 
     String registryAddress() default "127.0.0.1:2181";
 
+    long timeout() default 50000;
+
 }

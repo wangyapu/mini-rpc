@@ -17,6 +17,8 @@ public class RpcReferenceBean implements FactoryBean<Object> {
 
     private String registryAddr;
 
+    private long timeout;
+
     private Object object;
 
     @Override
@@ -34,7 +36,7 @@ public class RpcReferenceBean implements FactoryBean<Object> {
         this.object = Proxy.newProxyInstance(
                 interfaceClass.getClassLoader(),
                 new Class<?>[]{interfaceClass},
-                new RpcInvokerProxy(serviceVersion, registryService));
+                new RpcInvokerProxy(serviceVersion, timeout, registryService));
     }
 
     public void setInterfaceClass(Class<?> interfaceClass) {
@@ -53,4 +55,7 @@ public class RpcReferenceBean implements FactoryBean<Object> {
         this.registryAddr = registryAddr;
     }
 
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
 }
