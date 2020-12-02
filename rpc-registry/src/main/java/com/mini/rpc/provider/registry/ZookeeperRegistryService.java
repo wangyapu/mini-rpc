@@ -1,19 +1,24 @@
 package com.mini.rpc.provider.registry;
 
+import com.mini.rpc.common.RpcServiceHelper;
 import com.mini.rpc.common.ServiceMeta;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
+import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.details.JsonInstanceSerializer;
+
+import java.io.IOException;
+import java.util.Collection;
 
 public class ZookeeperRegistryService implements RegistryService {
     public static final int BASE_SLEEP_TIME_MS = 1000;
     public static final int MAX_RETRIES = 3;
     public static final String ZK_BASE_PATH = "/mini_rpc";
 
-    private ServiceDiscovery<ServiceMeta> serviceDiscovery;
+    private final ServiceDiscovery<ServiceMeta> serviceDiscovery;
 
     public ZookeeperRegistryService(String registryAddr) throws Exception {
         CuratorFramework client = CuratorFrameworkFactory.newClient(registryAddr, new ExponentialBackoffRetry(BASE_SLEEP_TIME_MS, MAX_RETRIES));
@@ -28,22 +33,41 @@ public class ZookeeperRegistryService implements RegistryService {
     }
 
     @Override
-    public void register(ServiceMeta serviceMeta) {
-
+    public void register(ServiceMeta serviceMeta) throws Exception {
+        ServiceInstance<ServiceMeta> serviceInstance = ServiceInstance
+                .<ServiceMeta>builder()
+                .name(RpcServiceHelper.buildServiceKey(serviceMeta.getServiceName(), serviceMeta.getServiceVersion()))
+                .address(serviceMeta.getServiceAddr())
+                .port(serviceMeta.getServicePort())
+                .payload(serviceMeta)
+                .build();
+        serviceDiscovery.registerService(serviceInstance);
     }
 
     @Override
-    public void unRegister(ServiceMeta serviceMeta) {
-
+    public void unRegister(ServiceMeta serviceMeta) throws Exception {
+        ServiceInstance<ServiceMeta> serviceInstance = ServiceInstance
+                .<ServiceMeta>builder()
+                .name(serviceMeta.getServiceName())
+                .address(serviceMeta.getServiceAddr())
+                .port(serviceMeta.getServicePort())
+                .payload(serviceMeta)
+                .build();
+        serviceDiscovery.unregisterService(serviceInstance);
     }
 
     @Override
-    public ServiceMeta discovery(String serviceName) {
+    public ServiceMeta discovery(String serviceName) throws Exception {
+        Collection<ServiceInstance<ServiceMeta>> serviceInstances = serviceDiscovery.queryForInstances(serviceName);
+        // TODO LoadBalance
+        for (ServiceInstance<ServiceMeta> serviceInstance : serviceInstances) {
+            return serviceInstance.getPayload();
+        }
         return null;
     }
 
     @Override
-    public void destroy() {
-
+    public void destroy() throws IOException {
+        serviceDiscovery.close();
     }
 }
