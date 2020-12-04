@@ -10,7 +10,7 @@ public interface RegistryService {
 
     void unRegister(ServiceMeta serviceMeta) throws Exception;
 
-    ServiceMeta discovery(String serviceName) throws Exception;
+    ServiceMeta discovery(String serviceName, int invokerHashCode) throws Exception;
 
     void destroy() throws IOException;
 }

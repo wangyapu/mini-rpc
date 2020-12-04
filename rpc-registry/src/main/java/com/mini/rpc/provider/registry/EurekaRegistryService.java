@@ -19,7 +19,7 @@ public class EurekaRegistryService implements RegistryService {
     }
 
     @Override
-    public ServiceMeta discovery(String serviceName) {
+    public ServiceMeta discovery(String serviceName, int invokerHashCode) {
         return null;
     }
 

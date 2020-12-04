@@ -40,8 +40,11 @@ public class RpcConsumer {
 
     public void sendRequest(MiniRpcProtocol<MiniRpcRequest> protocol, RegistryService registryService) throws Exception {
         MiniRpcRequest request = protocol.getBody();
+        Object[] params = request.getParams();
         String serviceKey = RpcServiceHelper.buildServiceKey(request.getClassName(), request.getServiceVersion());
-        ServiceMeta serviceMetadata = registryService.discovery(serviceKey);
+
+        int invokerHashCode = params.length > 0 ? params[0].hashCode() : serviceKey.hashCode();
+        ServiceMeta serviceMetadata = registryService.discovery(serviceKey, invokerHashCode);
 
         if (serviceMetadata != null) {
             ChannelFuture future = bootstrap.connect(serviceMetadata.getServiceAddr(), serviceMetadata.getServicePort()).sync();

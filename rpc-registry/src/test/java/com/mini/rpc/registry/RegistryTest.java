@@ -48,9 +48,9 @@ public class RegistryTest {
         registryService.register(serviceMeta2);
         registryService.register(serviceMeta3);
 
-        ServiceMeta discovery1 = registryService.discovery("test1#1.0.0");
-        ServiceMeta discovery2 = registryService.discovery("test2#1.0.0");
-        ServiceMeta discovery3 = registryService.discovery("test3#1.0.0");
+        ServiceMeta discovery1 = registryService.discovery("test1#1.0.0", "test1".hashCode());
+        ServiceMeta discovery2 = registryService.discovery("test2#1.0.0", "test2".hashCode());
+        ServiceMeta discovery3 = registryService.discovery("test3#1.0.0", "test3".hashCode());
 
         assert discovery1 != null;
         assert discovery2 != null;

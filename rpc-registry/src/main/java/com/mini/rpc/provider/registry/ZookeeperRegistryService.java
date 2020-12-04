@@ -2,6 +2,7 @@ package com.mini.rpc.provider.registry;
 
 import com.mini.rpc.common.RpcServiceHelper;
 import com.mini.rpc.common.ServiceMeta;
+import com.mini.rpc.provider.registry.loadbalancer.ZKConsistentHashLoadBalancer;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -12,6 +13,7 @@ import org.apache.curator.x.discovery.details.JsonInstanceSerializer;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 public class ZookeeperRegistryService implements RegistryService {
     public static final int BASE_SLEEP_TIME_MS = 1000;
@@ -57,11 +59,11 @@ public class ZookeeperRegistryService implements RegistryService {
     }
 
     @Override
-    public ServiceMeta discovery(String serviceName) throws Exception {
+    public ServiceMeta discovery(String serviceName, int invokerHashCode) throws Exception {
         Collection<ServiceInstance<ServiceMeta>> serviceInstances = serviceDiscovery.queryForInstances(serviceName);
-        // TODO LoadBalance
-        for (ServiceInstance<ServiceMeta> serviceInstance : serviceInstances) {
-            return serviceInstance.getPayload();
+        ServiceInstance<ServiceMeta> instance = new ZKConsistentHashLoadBalancer().select((List<ServiceInstance<ServiceMeta>>) serviceInstances, invokerHashCode);
+        if (instance != null) {
+            return instance.getPayload();
         }
         return null;
     }
