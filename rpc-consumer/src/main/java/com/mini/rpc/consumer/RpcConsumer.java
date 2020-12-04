@@ -1,6 +1,12 @@
 package com.mini.rpc.consumer;
 
-import com.mini.rpc.common.*;
+import com.mini.rpc.codec.MiniRpcDecoder;
+import com.mini.rpc.codec.MiniRpcEncoder;
+import com.mini.rpc.common.MiniRpcRequest;
+import com.mini.rpc.common.RpcServiceHelper;
+import com.mini.rpc.common.ServiceMeta;
+import com.mini.rpc.handler.RpcResponseHandler;
+import com.mini.rpc.protocol.MiniRpcProtocol;
 import com.mini.rpc.provider.registry.RegistryService;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -24,25 +30,31 @@ public class RpcConsumer {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
-
+                        socketChannel.pipeline()
+                                .addLast(new MiniRpcEncoder())
+                                .addLast(new MiniRpcDecoder())
+                                .addLast(new RpcResponseHandler());
                     }
                 });
     }
 
-    public void sendRequest(MiniRpcRequest request, RegistryService registryService) throws Exception {
+    public void sendRequest(MiniRpcProtocol<MiniRpcRequest> protocol, RegistryService registryService) throws Exception {
+        MiniRpcRequest request = protocol.getBody();
         String serviceKey = RpcServiceHelper.buildServiceKey(request.getClassName(), request.getServiceVersion());
         ServiceMeta serviceMetadata = registryService.discovery(serviceKey);
 
-        ChannelFuture future = bootstrap.connect(serviceMetadata.getServiceAddr(), serviceMetadata.getServicePort()).sync();
-        future.addListener((ChannelFutureListener) arg0 -> {
-            if (future.isSuccess()) {
-                log.info("connect rpc server {} on port {} success.", serviceMetadata.getServiceAddr(), serviceMetadata.getServicePort());
-            } else {
-                log.error("connect rpc server {} on port {} failed.", serviceMetadata.getServiceAddr(), serviceMetadata.getServicePort());
-                future.cause().printStackTrace();
-                eventLoopGroup.shutdownGracefully();
-            }
-        });
-        future.channel().writeAndFlush(request);
+        if (serviceMetadata != null) {
+            ChannelFuture future = bootstrap.connect(serviceMetadata.getServiceAddr(), serviceMetadata.getServicePort()).sync();
+            future.addListener((ChannelFutureListener) arg0 -> {
+                if (future.isSuccess()) {
+                    log.info("connect rpc server {} on port {} success.", serviceMetadata.getServiceAddr(), serviceMetadata.getServicePort());
+                } else {
+                    log.error("connect rpc server {} on port {} failed.", serviceMetadata.getServiceAddr(), serviceMetadata.getServicePort());
+                    future.cause().printStackTrace();
+                    eventLoopGroup.shutdownGracefully();
+                }
+            });
+            future.channel().writeAndFlush(protocol).sync();
+        }
     }
 }

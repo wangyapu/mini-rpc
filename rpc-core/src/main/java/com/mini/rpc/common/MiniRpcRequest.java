@@ -2,9 +2,10 @@ package com.mini.rpc.common;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class MiniRpcRequest {
-    private String requestId;
+public class MiniRpcRequest implements Serializable {
     private String serviceVersion;
     private String className;
     private String methodName;

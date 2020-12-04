@@ -16,6 +16,7 @@
         <module>rpc-test</module>
         <module>rpc-registry</module>
         <module>rpc-facade</module>
+        <module>rpc-protocol</module>
     </modules>
 
     <!-- Inherit defaults from Spring Boot -->
@@ -45,6 +46,11 @@
             <dependency>
                 <groupId>com.mini.rpc</groupId>
                 <artifactId>rpc-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mini.rpc</groupId>
+                <artifactId>rpc-protocol</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -94,17 +100,45 @@
             </dependency>
 
             <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-core-asl</artifactId>
                 <version>1.9.13</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.caucho</groupId>
+                <artifactId>hessian</artifactId>
+                <version>4.0.38</version>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.12</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
+        <jackson.version>2.9.6</jackson.version>
     </properties>
 
 </project>

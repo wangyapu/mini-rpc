@@ -1,7 +1,10 @@
 package com.mini.rpc.provider;
 
+import com.mini.rpc.codec.MiniRpcDecoder;
+import com.mini.rpc.codec.MiniRpcEncoder;
 import com.mini.rpc.common.RpcServiceHelper;
 import com.mini.rpc.common.ServiceMeta;
+import com.mini.rpc.handler.RpcRequestHandler;
 import com.mini.rpc.provider.annotation.RpcService;
 import com.mini.rpc.provider.registry.RegistryService;
 import io.netty.bootstrap.ServerBootstrap;
@@ -28,7 +31,7 @@ public class RpcProvider implements InitializingBean, BeanPostProcessor {
     private final int serverPort;
     private final RegistryService serviceRegistry;
 
-    private Map<String, Object> rpcServiceHolder = new HashMap<>();
+    private final Map<String, Object> rpcServiceMap = new HashMap<>();
 
     public RpcProvider(int serverPort, RegistryService serviceRegistry) {
         this.serverPort = serverPort;
@@ -58,7 +61,10 @@ public class RpcProvider implements InitializingBean, BeanPostProcessor {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
-
+                            socketChannel.pipeline()
+                                    .addLast(new MiniRpcEncoder())
+                                    .addLast(new MiniRpcDecoder())
+                                    .addLast(new RpcRequestHandler(rpcServiceMap));
                         }
                     })
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
@@ -87,7 +93,7 @@ public class RpcProvider implements InitializingBean, BeanPostProcessor {
                 serviceMeta.setServiceVersion(serviceVersion);
 
                 serviceRegistry.register(serviceMeta);
-                rpcServiceHolder.put(RpcServiceHelper.buildServiceKey(serviceMeta.getServiceName(), serviceMeta.getServiceVersion()), bean);
+                rpcServiceMap.put(RpcServiceHelper.buildServiceKey(serviceMeta.getServiceName(), serviceMeta.getServiceVersion()), bean);
             } catch (Exception e) {
                 log.error("failed to register service {}#{}", serviceName, serviceVersion, e);
             }

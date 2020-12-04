@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 @Data
 public class MiniRpcResponse implements Serializable {
-    private String requestId;
+    private long requestId;
     private Object data;
     private String message;
 }
