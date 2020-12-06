@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mini.rpc</groupId>
-    <artifactId>rpc</artifactId>
+    <artifactId>mini-rpc</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -14,7 +14,6 @@
         <module>rpc-core</module>
         <module>rpc-registry</module>
         <module>rpc-test</module>
-        <module>rpc-registry</module>
         <module>rpc-facade</module>
         <module>rpc-protocol</module>
     </modules>
