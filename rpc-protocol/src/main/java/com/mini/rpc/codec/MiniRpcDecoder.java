@@ -58,20 +58,22 @@ public class MiniRpcDecoder extends ByteToMessageDecoder {
             return;
         }
 
+        MsgHeader header = new MsgHeader();
+        header.setMagic(magic);
+        header.setVersion(version);
+        header.setSerialization(serializeType);
+        header.setStatus(status);
+        header.setRequestId(requestId);
+        header.setMsgType(msgType);
+        header.setMsgLen(dataLength);
+
+
         RpcSerialization rpcSerialization = SerializationFactory.getRpcSerialization(serializeType);
         switch (msgTypeEnum) {
             case REQUEST:
                 MiniRpcRequest request = rpcSerialization.deserialize(data, MiniRpcRequest.class);
                 if (request != null) {
                     MiniRpcProtocol<MiniRpcRequest> protocol = new MiniRpcProtocol<>();
-                    MsgHeader header = new MsgHeader();
-                    header.setMagic(magic);
-                    header.setVersion(version);
-                    header.setSerialization(serializeType);
-                    header.setStatus(status);
-                    header.setRequestId(requestId);
-                    header.setMsgType(msgType);
-                    header.setMsgLen(dataLength);
                     protocol.setHeader(header);
                     protocol.setBody(request);
                     out.add(protocol);
@@ -79,7 +81,10 @@ public class MiniRpcDecoder extends ByteToMessageDecoder {
             case RESPONSE:
                 MiniRpcResponse response = rpcSerialization.deserialize(data, MiniRpcResponse.class);
                 if (response != null) {
-                    out.add(response);
+                    MiniRpcProtocol<MiniRpcResponse> protocol = new MiniRpcProtocol<>();
+                    protocol.setHeader(header);
+                    protocol.setBody(response);
+                    out.add(protocol);
                 }
             case HEARTBEAT:
                 // TODO

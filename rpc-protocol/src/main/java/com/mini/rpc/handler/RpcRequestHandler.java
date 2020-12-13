@@ -5,6 +5,7 @@ import com.mini.rpc.common.MiniRpcResponse;
 import com.mini.rpc.common.RpcServiceHelper;
 import com.mini.rpc.protocol.MiniRpcProtocol;
 import com.mini.rpc.protocol.MsgHeader;
+import com.mini.rpc.protocol.MsgStatus;
 import com.mini.rpc.protocol.MsgType;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -25,23 +26,23 @@ public class RpcRequestHandler extends SimpleChannelInboundHandler<MiniRpcProtoc
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, MiniRpcProtocol<MiniRpcRequest> protocol) {
         RpcRequestProcessor.submitRequest(() -> {
+            MiniRpcProtocol<MiniRpcResponse> resProtocol = new MiniRpcProtocol<>();
             MiniRpcResponse response = new MiniRpcResponse();
             MsgHeader header = protocol.getHeader();
-            long requestId = header.getRequestId();
-            response.setRequestId(requestId);
+            header.setMsgType((byte) MsgType.RESPONSE.getType());
             try {
                 Object result = handle(protocol.getBody());
                 response.setData(result);
 
-                MiniRpcProtocol<MiniRpcResponse> resProtocol = new MiniRpcProtocol<>();
-                header.setMsgType((byte) MsgType.RESPONSE.getType());
+                header.setStatus((byte) MsgStatus.SUCCESS.getCode());
                 resProtocol.setHeader(header);
                 resProtocol.setBody(response);
-                ctx.writeAndFlush(resProtocol);
             } catch (Throwable throwable) {
+                header.setStatus((byte) MsgStatus.FAIL.getCode());
                 response.setMessage(throwable.toString());
-                log.error("process request {} error", requestId, throwable);
+                log.error("process request {} error", header.getRequestId(), throwable);
             }
+            ctx.writeAndFlush(resProtocol);
         });
     }
 
