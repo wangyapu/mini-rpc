@@ -10,7 +10,7 @@ import java.io.ByteArrayOutputStream;
 
 @Component
 @Slf4j
-public class HessianSerialize implements RpcSerialization {
+public class HessianSerialization implements RpcSerialization {
 
     @Override
     public <T> byte[] serialize(T object) {

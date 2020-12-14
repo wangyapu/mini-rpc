@@ -33,7 +33,6 @@ public class MiniRpcDecoder extends ByteToMessageDecoder {
         in.markReaderIndex();
 
         short magic = in.readShort();
-
         if (magic != ProtocolConstants.MAGIC) {
             throw new IllegalArgumentException("magic number is illegal, " + magic);
         }
@@ -52,7 +51,6 @@ public class MiniRpcDecoder extends ByteToMessageDecoder {
         byte[] data = new byte[dataLength];
         in.readBytes(data);
 
-
         MsgType msgTypeEnum = MsgType.findByType(msgType);
         if (msgTypeEnum == null) {
             return;
@@ -66,7 +64,6 @@ public class MiniRpcDecoder extends ByteToMessageDecoder {
         header.setRequestId(requestId);
         header.setMsgType(msgType);
         header.setMsgLen(dataLength);
-
 
         RpcSerialization rpcSerialization = SerializationFactory.getRpcSerialization(serializeType);
         switch (msgTypeEnum) {

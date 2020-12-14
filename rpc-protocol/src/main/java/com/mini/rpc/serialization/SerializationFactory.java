@@ -7,7 +7,7 @@ public class SerializationFactory {
 
         switch (typeEnum) {
             case HESSIAN:
-                return new HessianSerialize();
+                return new HessianSerialization();
             case JSON:
                 return new JsonSerialization();
             default:
