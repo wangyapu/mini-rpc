@@ -57,7 +57,7 @@ public class RpcConsumer {
                     eventLoopGroup.shutdownGracefully();
                 }
             });
-            future.channel().writeAndFlush(protocol).sync();
+            future.channel().writeAndFlush(protocol);
         }
     }
 }

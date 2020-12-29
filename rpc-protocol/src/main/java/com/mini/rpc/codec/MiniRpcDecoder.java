@@ -75,6 +75,7 @@ public class MiniRpcDecoder extends ByteToMessageDecoder {
                     protocol.setBody(request);
                     out.add(protocol);
                 }
+                break;
             case RESPONSE:
                 MiniRpcResponse response = rpcSerialization.deserialize(data, MiniRpcResponse.class);
                 if (response != null) {
@@ -83,6 +84,7 @@ public class MiniRpcDecoder extends ByteToMessageDecoder {
                     protocol.setBody(response);
                     out.add(protocol);
                 }
+                break;
             case HEARTBEAT:
                 // TODO
                 break;
