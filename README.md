@@ -1,5 +1,13 @@
 # Mini RPC
 
+## 项目支持
+ 
+本项目是拉勾教育专栏《Netty 核心原理剖析与 RPC 实践》源码，属于个人原创，仅供学习参考。
+
+如果你对 Netty 的底层原理感兴趣，欢迎支持我的个人技术专栏，感谢。
+
+![RPC 项目架构](img/lagou_netty.JPEG)
+
 ## 项目架构
 
 ![RPC 项目架构](img/rpc_arch.png)
